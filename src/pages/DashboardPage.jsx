@@ -1,11 +1,10 @@
 import React from 'react';
-import { AppLayout, Card, CardBody } from '@aviary-ui/ui';
-import { NAV_ITEMS } from '@/config/nav';
-import { config } from '@/infra/config';
+import { Card, CardBody } from '@aviary-ui/ui';
+import AdminLayout from '@/components/AdminLayout';
 
 export default function DashboardPage() {
   return (
-    <AppLayout navItems={NAV_ITEMS} appName={config.appName}>
+    <AdminLayout>
       <div className="page-header d-print-none mb-3">
         <div className="row align-items-center">
           <div className="col">
@@ -19,6 +18,6 @@ export default function DashboardPage() {
           <p className="text-secondary mb-0">Replace this placeholder with your page content.</p>
         </CardBody>
       </Card>
-    </AppLayout>
+    </AdminLayout>
   );
 }

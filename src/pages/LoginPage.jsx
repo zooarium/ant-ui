@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNotification, Button, Card, CardBody, FormField, Input } from '@aviary-ui/ui';
 import { storage } from '@aviary-ui/core';
 import { config } from '@/infra/config';
+import { ADMIN_PATHS } from '@/config/nav';
 import { login } from '@/api/auth';
 
 const loginSchema = z.object({
@@ -32,7 +33,7 @@ export default function LoginPage() {
       storage.setToken(data.token);
       if (data.refresh_token) storage.setRefreshToken(data.refresh_token);
       storage.setUser(data.user ?? {});
-      navigate('/dashboard');
+      navigate(ADMIN_PATHS.dashboard);
     } catch (err) {
       showNotification(err.message, 'error');
     }

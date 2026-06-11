@@ -11,6 +11,7 @@ configure({
   apiBase: import.meta.env.VITE_API_BE_URL,
   authBase: import.meta.env.VITE_API_URL,
   refreshPath: import.meta.env.VITE_REFRESH_PATH ?? '/users/refresh',
+  loginPath: '/admin/login',
 });
 
 // Optional: enable MSW mock API in dev (no backend needed).
