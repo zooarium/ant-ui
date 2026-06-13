@@ -14,6 +14,9 @@ const OrdersPage = lazy(() => import('../../pages/OrdersPage'));
 const OrderDetailPage = lazy(() => import('../../pages/OrderDetailPage'));
 const OrderGroupDetailPage = lazy(() => import('../../pages/OrderGroupDetailPage'));
 
+// Public order-intake flow (guest token). Self-contained — no admin auth guards.
+const IntakePage = lazy(() => import('@/intake/pages/IntakePage'));
+
 function PageLoader() {
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
@@ -34,6 +37,9 @@ export default function AppRouter() {
         <Routes>
           {/* Public site (root domain) — customer-facing pages live here */}
           <Route path="/" element={<WelcomePage />} />
+
+          {/* Public order intake — no login; guest token handled inside the module */}
+          <Route path="/intake" element={<IntakePage />} />
 
           {/* Admin app — everything (incl. login) under /admin */}
           <Route
