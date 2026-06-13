@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import React, { useEffect, useRef } from 'react';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -12,7 +12,14 @@ import {
   IconTrash,
   useNotification,
 } from '@aviary-ui/ui';
-import { useAttributes } from '@/hooks/useAttributes';
+import { useAttributes, useAttribute } from '@/hooks/useAttributes';
+
+const optionSchema = z.object({
+  option_id: z.number().int(),
+  value: z.string().optional(),
+  _selected: z.boolean(),
+  price_delta: z.coerce.number(),
+});
 
 const productSchema = z
   .object({
@@ -23,6 +30,7 @@ const productSchema = z
       z.object({
         attribute_id: z.coerce.number().int().min(1, 'Pick an attribute'),
         is_mandatory: z.boolean(),
+        options: z.array(optionSchema),
       })
     ),
   })
@@ -42,10 +50,114 @@ const productSchema = z
 
 const emptyValues = { name: '', price: 0, status: 1, attributes: [] };
 
+// One assigned-attribute row: attribute picker + mandatory flag + the allowed
+// option subset with per-option price deltas. Loads the attribute's live option
+// catalogue and merges it with the current form selections (preserving edits).
+function AttributeAssignmentRow({ index, control, register, setValue, getValues, errors, activeAttributes, onRemove }) {
+  const attributeId = useWatch({ control, name: `attributes.${index}.attribute_id` });
+  const { attribute } = useAttribute(Number(attributeId) >= 1 ? Number(attributeId) : null);
+
+  // Re-seed the row's option list whenever the loaded catalogue changes, merging
+  // in any current selections/deltas. Guarded by a signature so user edits to the
+  // checkboxes/deltas don't trigger a reseed loop.
+  const seededRef = useRef('');
+  useEffect(() => {
+    if (Number(attributeId) < 1) {
+      setValue(`attributes.${index}.options`, []);
+      seededRef.current = `${attributeId}`;
+      return;
+    }
+    if (!attribute) return;
+    const catalogue = attribute.options ?? [];
+    const sig = `${attributeId}:${catalogue.map((o) => o.id).join(',')}`;
+    if (seededRef.current === sig) return;
+    seededRef.current = sig;
+
+    const current = getValues(`attributes.${index}.options`) ?? [];
+    const merged = catalogue.map((o) => {
+      const existing = current.find((c) => c.option_id === o.id);
+      return {
+        option_id: o.id,
+        value: o.value,
+        _selected: existing?._selected ?? false,
+        price_delta: existing?.price_delta ?? 0,
+      };
+    });
+    setValue(`attributes.${index}.options`, merged);
+  }, [attributeId, attribute, index, setValue, getValues]);
+
+  const options = useWatch({ control, name: `attributes.${index}.options` }) ?? [];
+  const attrErrors = errors.attributes?.[index];
+
+  return (
+    <div className="border rounded p-3 mb-2">
+      <div className="d-flex gap-2 align-items-start">
+        <div className="flex-fill">
+          <Select
+            error={attrErrors?.attribute_id?.message}
+            {...register(`attributes.${index}.attribute_id`)}
+          >
+            <option value={0}>Select attribute…</option>
+            {activeAttributes.map((attr) => (
+              <option key={attr.id} value={attr.id}>
+                {attr.name}
+              </option>
+            ))}
+          </Select>
+          {attrErrors?.attribute_id && (
+            <div className="invalid-feedback d-block">{attrErrors.attribute_id.message}</div>
+          )}
+        </div>
+        <label className="form-check form-check-inline mt-2 mb-0 text-nowrap">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            {...register(`attributes.${index}.is_mandatory`)}
+          />
+          <span className="form-check-label">Mandatory</span>
+        </label>
+        <Button variant="ghost-danger" icon type="button" onClick={onRemove} title="Remove attribute">
+          <IconTrash size={16} />
+        </Button>
+      </div>
+
+      {Number(attributeId) >= 1 && (
+        <div className="mt-2">
+          <div className="text-secondary small mb-1">Allowed options &amp; price deltas</div>
+          {options.length === 0 ? (
+            <div className="text-secondary small">This attribute has no options.</div>
+          ) : (
+            options.map((opt, oIdx) => (
+              <div key={opt.option_id} className="d-flex align-items-center gap-2 mb-1">
+                <label className="form-check mb-0" style={{ minWidth: '12rem' }}>
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    {...register(`attributes.${index}.options.${oIdx}._selected`)}
+                  />
+                  <span className="form-check-label">{opt.value}</span>
+                </label>
+                <div style={{ width: '8rem' }}>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="Δ price"
+                    {...register(`attributes.${index}.options.${oIdx}.price_delta`)}
+                  />
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Add + Edit modal for a product and its attribute assignments.
 // product = null → add mode. The PUT attributes array replaces all assignments
-// (full sync), so rows removed here are unassigned on save.
-// Only active attributes are assignable (API enforces; picker lists status=1 only).
+// (full sync). Each assigned attribute carries the allowed option subset with
+// per-option price deltas. Only active attributes are assignable.
 export default function ProductFormModal({ isOpen, onClose, product, onSubmit }) {
   const isEdit = !!product;
   const { showNotification } = useNotification();
@@ -58,6 +170,8 @@ export default function ProductFormModal({ isOpen, onClose, product, onSubmit })
     control,
     handleSubmit,
     reset,
+    setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(productSchema),
@@ -66,7 +180,8 @@ export default function ProductFormModal({ isOpen, onClose, product, onSubmit })
 
   const { fields, append, remove } = useFieldArray({ control, name: 'attributes' });
 
-  // Re-seed the form every time the modal opens.
+  // Re-seed the form every time the modal opens. Selected options are seeded
+  // here; AttributeAssignmentRow merges them against the live catalogue on load.
   useEffect(() => {
     if (!isOpen) return;
     reset(
@@ -78,6 +193,12 @@ export default function ProductFormModal({ isOpen, onClose, product, onSubmit })
             attributes: (product.attributes ?? []).map((a) => ({
               attribute_id: a.attribute_id,
               is_mandatory: !!a.is_mandatory,
+              options: (a.options ?? []).map((o) => ({
+                option_id: o.id,
+                value: o.value,
+                _selected: true,
+                price_delta: o.price_delta ?? 0,
+              })),
             })),
           }
         : emptyValues
@@ -92,6 +213,9 @@ export default function ProductFormModal({ isOpen, onClose, product, onSubmit })
       attributes: values.attributes.map((a) => ({
         attribute_id: a.attribute_id,
         is_mandatory: a.is_mandatory,
+        options: (a.options ?? [])
+          .filter((o) => o._selected)
+          .map((o) => ({ option_id: o.option_id, price_delta: o.price_delta })),
       })),
     };
     try {
@@ -103,7 +227,7 @@ export default function ProductFormModal({ isOpen, onClose, product, onSubmit })
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={isEdit ? 'Edit Product' : 'Add Product'}>
+    <Modal isOpen={isOpen} onClose={onClose} title={isEdit ? 'Edit Product' : 'Add Product'} size="lg">
       <form onSubmit={handleSubmit(submit)} noValidate>
         <FormField label="Name" htmlFor="productName" error={errors.name?.message}>
           <Input
@@ -145,7 +269,7 @@ export default function ProductFormModal({ isOpen, onClose, product, onSubmit })
               variant="outline-secondary"
               size="sm"
               type="button"
-              onClick={() => append({ attribute_id: 0, is_mandatory: false })}
+              onClick={() => append({ attribute_id: 0, is_mandatory: false, options: [] })}
               className="d-flex align-items-center gap-1"
             >
               <IconPlus size={14} />
@@ -158,43 +282,17 @@ export default function ProductFormModal({ isOpen, onClose, product, onSubmit })
           )}
 
           {fields.map((field, index) => (
-            <div key={field.id} className="d-flex gap-2 mb-2 align-items-start">
-              <div className="flex-fill">
-                <Select
-                  error={errors.attributes?.[index]?.attribute_id?.message}
-                  {...register(`attributes.${index}.attribute_id`)}
-                >
-                  <option value={0}>Select attribute…</option>
-                  {activeAttributes.map((attr) => (
-                    <option key={attr.id} value={attr.id}>
-                      {attr.name}
-                    </option>
-                  ))}
-                </Select>
-                {errors.attributes?.[index]?.attribute_id && (
-                  <div className="invalid-feedback d-block">
-                    {errors.attributes[index].attribute_id.message}
-                  </div>
-                )}
-              </div>
-              <label className="form-check form-check-inline mt-2 mb-0 text-nowrap">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  {...register(`attributes.${index}.is_mandatory`)}
-                />
-                <span className="form-check-label">Mandatory</span>
-              </label>
-              <Button
-                variant="ghost-danger"
-                icon
-                type="button"
-                onClick={() => remove(index)}
-                title="Remove attribute"
-              >
-                <IconTrash size={16} />
-              </Button>
-            </div>
+            <AttributeAssignmentRow
+              key={field.id}
+              index={index}
+              control={control}
+              register={register}
+              setValue={setValue}
+              getValues={getValues}
+              errors={errors}
+              activeAttributes={activeAttributes}
+              onRemove={() => remove(index)}
+            />
           ))}
         </div>
 

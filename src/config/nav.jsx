@@ -7,6 +7,8 @@ export const ADMIN_PATHS = {
   attributes: '/admin/attributes',
   products: '/admin/products',
   orders: '/admin/orders',
+  // Order groups (tabs) — reached via the Orders page "Group" tab, no sidebar item.
+  orderGroups: '/admin/order-groups',
 };
 
 // Navigation items passed to AppLayout.

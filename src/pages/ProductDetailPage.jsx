@@ -16,6 +16,7 @@ import AdminLayout from '@/components/AdminLayout';
 import ProductFormModal from '@/components/ProductFormModal';
 import { useProduct, useProducts } from '@/hooks/useProducts';
 import { ADMIN_PATHS } from '@/config/nav';
+import { formatDateTime } from '@/utils/datetime';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -120,11 +121,11 @@ export default function ProductDetailPage() {
                 </div>
                 <div className="datagrid-item">
                   <div className="datagrid-title">Created</div>
-                  <div className="datagrid-content">{product.created_at}</div>
+                  <div className="datagrid-content">{formatDateTime(product.created_at)}</div>
                 </div>
                 <div className="datagrid-item">
                   <div className="datagrid-title">Updated</div>
-                  <div className="datagrid-content">{product.updated_at}</div>
+                  <div className="datagrid-content">{formatDateTime(product.updated_at)}</div>
                 </div>
               </div>
             </CardBody>

@@ -10,14 +10,26 @@ import {
   IconEdit,
   IconTrash,
   IconArrowLeft,
+  IconChevronRight,
   useNotification,
 } from '@aviary-ui/ui';
 import AdminLayout from '@/components/AdminLayout';
 import OrderFormModal from '@/components/OrderFormModal';
 import OrderStatusSelect from '@/components/OrderStatusSelect';
+import MoveOrderModal from '@/components/MoveOrderModal';
 import { useOrder, useOrders } from '@/hooks/useOrders';
 import { orderStatusMeta } from '@/api/orders';
 import { ADMIN_PATHS } from '@/config/nav';
+import { formatDateTime } from '@/utils/datetime';
+
+// Line total for an item: prefer the API's snapshotted line_total, else
+// (price + summed attribute deltas) * quantity.
+const lineTotalOf = (item) =>
+  item.line_total != null
+    ? Number(item.line_total)
+    : (Number(item.price ?? 0) +
+        (item.attributes ?? []).reduce((s, a) => s + Number(a.price_delta ?? 0), 0)) *
+      Number(item.quantity ?? 0);
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -25,12 +37,19 @@ export default function OrderDetailPage() {
   const { showNotification } = useNotification();
   const [isEditOpen, setEditOpen] = useState(false);
   const [isConfirmOpen, setConfirmOpen] = useState(false);
+  const [isMoveOpen, setMoveOpen] = useState(false);
 
   const { order, isLoading, error, refetch } = useOrder(id);
-  const { update, remove, setStatus } = useOrders();
+  const { update, remove, setStatus, setGroup } = useOrders();
 
   const items = order?.products ?? [];
-  const orderTotal = items.reduce((sum, item) => sum + (item.price ?? 0) * (item.quantity ?? 0), 0);
+  // API order.total is the pre-tax subtotal (sum of line totals). Prefer it;
+  // fall back to a local sum. Tax is applied on top.
+  const subtotal =
+    order?.total != null ? Number(order.total) : items.reduce((sum, item) => sum + lineTotalOf(item), 0);
+  const taxPercent = Number(order?.tax_percent ?? 0);
+  const taxAmount = (subtotal * taxPercent) / 100;
+  const grandTotal = subtotal + taxAmount;
 
   const handleDelete = async () => {
     try {
@@ -122,12 +141,48 @@ export default function OrderDetailPage() {
                   </div>
                 </div>
                 <div className="datagrid-item">
+                  <div className="datagrid-title">Order date</div>
+                  <div className="datagrid-content">{order.ordered_at ? formatDateTime(order.ordered_at) : '—'}</div>
+                </div>
+                <div className="datagrid-item">
+                  <div className="datagrid-title">Group</div>
+                  <div className="datagrid-content d-flex align-items-center gap-2">
+                    {order.group_id ? (
+                      <>
+                        <Link
+                          to={`${ADMIN_PATHS.orderGroups}/${order.group_id}`}
+                          className="d-inline-flex align-items-center gap-1"
+                        >
+                          View group #{order.group_id}
+                          <IconChevronRight size={14} />
+                        </Link>
+                        {order.group_token && <code className="text-secondary">{order.group_token}</code>}
+                      </>
+                    ) : (
+                      '—'
+                    )}
+                    <Button variant="outline-secondary" size="sm" onClick={() => setMoveOpen(true)}>
+                      Move
+                    </Button>
+                  </div>
+                </div>
+                <div className="datagrid-item">
+                  <div className="datagrid-title">Tax</div>
+                  <div className="datagrid-content">
+                    {taxPercent.toFixed(2)}% ({taxAmount.toFixed(2)})
+                  </div>
+                </div>
+                <div className="datagrid-item">
+                  <div className="datagrid-title">Total</div>
+                  <div className="datagrid-content fw-bold">{grandTotal.toFixed(2)}</div>
+                </div>
+                <div className="datagrid-item">
                   <div className="datagrid-title">Created</div>
-                  <div className="datagrid-content">{order.created_at}</div>
+                  <div className="datagrid-content">{formatDateTime(order.created_at)}</div>
                 </div>
                 <div className="datagrid-item">
                   <div className="datagrid-title">Updated</div>
-                  <div className="datagrid-content">{order.updated_at}</div>
+                  <div className="datagrid-content">{formatDateTime(order.updated_at)}</div>
                 </div>
               </div>
             </CardBody>
@@ -161,6 +216,10 @@ export default function OrderDetailPage() {
                               {item.attributes.map((attr) => (
                                 <Badge key={`${attr.attribute_id}-${attr.option_id}`} color="blue-lt">
                                   {attr.attribute_name}: {attr.option_value}
+                                  {Number(attr.price_delta ?? 0) !== 0 &&
+                                    ` (${attr.price_delta > 0 ? '+' : '−'}${Math.abs(
+                                      Number(attr.price_delta)
+                                    ).toFixed(2)})`}
                                 </Badge>
                               ))}
                             </div>
@@ -170,18 +229,28 @@ export default function OrderDetailPage() {
                         </td>
                         <td className="text-end">{Number(item.price ?? 0).toFixed(2)}</td>
                         <td className="text-end">{item.quantity}</td>
-                        <td className="text-end fw-medium">
-                          {((item.price ?? 0) * (item.quantity ?? 0)).toFixed(2)}
-                        </td>
+                        <td className="text-end fw-medium">{lineTotalOf(item).toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
                     <tr>
+                      <td colSpan={4} className="text-end text-secondary">
+                        Subtotal
+                      </td>
+                      <td className="text-end text-secondary">{subtotal.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                      <td colSpan={4} className="text-end text-secondary">
+                        Tax ({taxPercent.toFixed(2)}%)
+                      </td>
+                      <td className="text-end text-secondary">{taxAmount.toFixed(2)}</td>
+                    </tr>
+                    <tr>
                       <td colSpan={4} className="text-end fw-bold">
                         Order total
                       </td>
-                      <td className="text-end fw-bold">{orderTotal.toFixed(2)}</td>
+                      <td className="text-end fw-bold">{grandTotal.toFixed(2)}</td>
                     </tr>
                   </tfoot>
                 </table>
@@ -190,6 +259,14 @@ export default function OrderDetailPage() {
           </Card>
         </>
       )}
+
+      <MoveOrderModal
+        isOpen={isMoveOpen}
+        onClose={() => setMoveOpen(false)}
+        orderId={order?.id}
+        currentGroupId={order?.group_id}
+        onSubmit={(targetId) => setGroup(id, targetId)}
+      />
 
       <OrderFormModal
         isOpen={isEditOpen}

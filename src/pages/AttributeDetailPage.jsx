@@ -16,6 +16,7 @@ import AdminLayout from '@/components/AdminLayout';
 import AttributeFormModal from '@/components/AttributeFormModal';
 import { useAttribute, useAttributes } from '@/hooks/useAttributes';
 import { ADMIN_PATHS } from '@/config/nav';
+import { formatDateTime } from '@/utils/datetime';
 
 export default function AttributeDetailPage() {
   const { id } = useParams();
@@ -116,11 +117,11 @@ export default function AttributeDetailPage() {
                 </div>
                 <div className="datagrid-item">
                   <div className="datagrid-title">Created</div>
-                  <div className="datagrid-content">{attribute.created_at}</div>
+                  <div className="datagrid-content">{formatDateTime(attribute.created_at)}</div>
                 </div>
                 <div className="datagrid-item">
                   <div className="datagrid-title">Updated</div>
-                  <div className="datagrid-content">{attribute.updated_at}</div>
+                  <div className="datagrid-content">{formatDateTime(attribute.updated_at)}</div>
                 </div>
               </div>
             </CardBody>

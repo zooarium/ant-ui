@@ -1,11 +1,12 @@
 import { apiRequest } from '@aviary-ui/core';
 
-// Order status enum (swagger: 1=pending, 2=confirmed, 3=completed, 4=cancelled).
+// Order status enum (1=pending, 2=confirmed, 3=completed, 4=cancelled, 5=paid).
 export const ORDER_STATUSES = [
   { value: 1, label: 'Pending', color: 'warning' },
   { value: 2, label: 'Confirmed', color: 'info' },
   { value: 3, label: 'Completed', color: 'success' },
   { value: 4, label: 'Cancelled', color: 'danger' },
+  { value: 5, label: 'Paid', color: 'teal' },
 ];
 
 export const orderStatusMeta = (status) =>
@@ -25,7 +26,7 @@ export function fetchOrder(id) {
   return apiRequest(`/orders/${id}`);
 }
 
-// payload: { customer_name, customer_contact, status?, products: [{ product_id, quantity, attributes: [{ attribute_id, option_id }] }] }
+// payload: { customer_name, customer_contact, status?, tax_percent?, products: [{ product_id, quantity, attributes: [{ attribute_id, option_id }] }] }
 export function createOrder(payload) {
   return apiRequest('/orders', {
     method: 'POST',
@@ -36,7 +37,7 @@ export function createOrder(payload) {
 // Full sync: items with id update quantity only (product/attributes immutable),
 // items without id are added, existing items missing from the payload are deleted.
 // Status is NOT updatable here — use updateOrderStatus.
-// payload: { customer_name, customer_contact, products: [{ id?, product_id?, quantity, attributes? }] }
+// payload: { customer_name, customer_contact, tax_percent?, products: [{ id?, product_id?, quantity, attributes? }] }
 export function updateOrder(id, payload) {
   return apiRequest(`/orders/${id}`, {
     method: 'PUT',
@@ -48,6 +49,15 @@ export function updateOrderStatus(id, status) {
   return apiRequest(`/orders/${id}/status`, {
     method: 'PATCH',
     body: JSON.stringify({ status }),
+  });
+}
+
+// Move an order to another group (tab). Orders cannot be detached, only moved —
+// group_id is required (the order always belongs to some group at the DB level).
+export function setOrderGroup(id, groupId) {
+  return apiRequest(`/orders/${id}/group`, {
+    method: 'PATCH',
+    body: JSON.stringify({ group_id: groupId }),
   });
 }
 

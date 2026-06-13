@@ -12,6 +12,7 @@ const ProductsPage = lazy(() => import('../../pages/ProductsPage'));
 const ProductDetailPage = lazy(() => import('../../pages/ProductDetailPage'));
 const OrdersPage = lazy(() => import('../../pages/OrdersPage'));
 const OrderDetailPage = lazy(() => import('../../pages/OrderDetailPage'));
+const OrderGroupDetailPage = lazy(() => import('../../pages/OrderGroupDetailPage'));
 
 function PageLoader() {
   return (
@@ -54,6 +55,7 @@ export default function AppRouter() {
           <Route path={`${ADMIN_PATHS.products}/:id`} element={<Private><ProductDetailPage /></Private>} />
           <Route path={ADMIN_PATHS.orders} element={<Private><OrdersPage /></Private>} />
           <Route path={`${ADMIN_PATHS.orders}/:id`} element={<Private><OrderDetailPage /></Private>} />
+          <Route path={`${ADMIN_PATHS.orderGroups}/:id`} element={<Private><OrderGroupDetailPage /></Private>} />
         </Routes>
       </Suspense>
     </BrowserRouter>
