@@ -1,6 +1,6 @@
 // App-specific config only.
-// HTTP client config (apiBase, authBase, refreshPath) is in main.jsx via configure().
-// No import.meta.env.* outside this file and main.jsx.
+// HTTP client config (apiBase, authBase, refreshPath) is in admin-main.jsx via configure().
+// No import.meta.env.* outside this file and admin-main.jsx.
 export const config = {
   appName: import.meta.env.VITE_APP_NAME ?? 'App',
   isDev: import.meta.env.DEV,
@@ -10,7 +10,9 @@ export const config = {
   intake: {
     keeperUrl: import.meta.env.VITE_KEEPER_URL ?? '',
     intakeUrl: import.meta.env.VITE_INTAKE_URL ?? '',
-    guestSiteKey: import.meta.env.VITE_GUEST_SITE_KEY ?? '',
+    // Site key is resolved at runtime from the URL (src/intake/lib/siteKey.js
+    // → keeper GET /guest-keys/lookup), so one build serves many tenants.
+    // No VITE_GUEST_SITE_KEY.
     recaptchaSiteKey: import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? '',
   },
 };

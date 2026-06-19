@@ -1,7 +1,6 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary, ThemeProvider, NotificationProvider } from '@aviary-ui/ui';
-import AppRouter from './infra/router';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -12,14 +11,14 @@ const queryClient = new QueryClient({
   },
 });
 
-export default function App() {
+// Shared provider shell. The router (PublicRouter or AdminRouter) is passed as
+// children by the entry point — the two apps ship as separate Vite bundles.
+export default function App({ children }) {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-          <NotificationProvider>
-            <AppRouter />
-          </NotificationProvider>
+          <NotificationProvider>{children}</NotificationProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </ErrorBoundary>

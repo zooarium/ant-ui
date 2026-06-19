@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { Button, Spinner, Alert, useNotification, IconArrowLeft, IconAlertTriangle } from '@aviary-ui/ui';
+import { STOREFRONT } from '@/public/storefront/data';
+import '../intake.css';
 import { useMenu } from '../hooks/useMenu';
 import { useCart } from '../hooks/useCart';
 import { usePlaceOrder } from '../hooks/usePlaceOrder';
@@ -43,6 +45,11 @@ export default function IntakePage() {
     getDeviceId();
   }, []);
 
+  // Browser tab title = tenant name (replaces the static "App" from index.html).
+  useEffect(() => {
+    if (STOREFRONT.name) document.title = STOREFRONT.name;
+  }, []);
+
   // List payload omits attributes (ant loads them only on GetByID), so fetch the
   // full product before opening the picker — otherwise mandatory options can't be
   // chosen and the API rejects the order with "mandatory attribute is missing".
@@ -65,14 +72,14 @@ export default function IntakePage() {
     setCreatingTab(true);
     try {
       const name = getCustomer()?.customer_name;
-      const res = await createOrderGroup({ label: name ? `${name}'s tab` : 'Shared tab' });
+      const res = await createOrderGroup({ label: name ? `${name}'s order` : 'Shared order' });
       const data = res?.data;
       if (!data?.id || !data?.token) throw new Error('No tab returned.');
       const tab = { group_id: data.id, token: data.token };
       setActiveTab(tab);
       setActiveTabState(tab);
     } catch (e) {
-      showNotification(e.message || 'Could not start a shared tab.', 'error');
+      showNotification(e.message || 'Could not start a shared order.', 'error');
     } finally {
       setCreatingTab(false);
     }
@@ -137,7 +144,7 @@ export default function IntakePage() {
         group_id = res?.data?.id;
         if (!group_id) return setFormError('That tab token was not found.');
       }
-      if (!group_id) group_label = `${values.customer_name}'s tab`;
+      if (!group_id) group_label = `${values.customer_name}'s order`;
 
       const result = await place({
         products: cart.toOrderItems(),
@@ -229,7 +236,7 @@ export default function IntakePage() {
               <Alert type="error" icon={IconAlertTriangle} className="mb-3">{formError}</Alert>
             )}
             <DetailsForm
-              activeTabLabel={activeTab ? 'shared tab' : undefined}
+              activeTabLabel={activeTab ? 'shared order' : undefined}
               defaultName={getCustomer()?.customer_name ?? ''}
               defaultContact={getCustomer()?.customer_contact ?? ''}
               onSubmit={onSubmitDetails}
@@ -244,20 +251,43 @@ export default function IntakePage() {
   );
 }
 
-// Page chrome shared across the intake surfaces.
+// hex "#rrggbb" → "r, g, b" for tabler's --tblr-primary-rgb (used in rgba()).
+function hexToRgb(hex) {
+  const h = hex.replace('#', '');
+  const n = parseInt(h.length === 3 ? h.replace(/(.)/g, '$1$1') : h, 16);
+  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+}
+
+// Page chrome shared across the intake surfaces. Themed from the tenant's
+// storefront branding (same data source) so intake matches the landing page:
+// the primary colour drives tabler's --tblr-primary (buttons/links) and the
+// storefront font/brand bar carry over.
 function Shell({ children, onHistory, onHome, title = 'Place your order' }) {
+  const brand = STOREFRONT.name;
+  const primary = STOREFRONT.branding?.primaryColor || '#b8482e';
+  const themeVars = {
+    '--sf-primary': primary,
+    '--tblr-primary': primary,
+    '--tblr-primary-rgb': hexToRgb(primary),
+  };
+
   return (
-    <div className="page">
-      <div className="container py-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h1 className="h2 mb-0" role={onHome ? 'button' : undefined} onClick={onHome}>
-            {title}
-          </h1>
+    <div className="page sf-intake" style={themeVars}>
+      <header className="sf-intake__bar">
+        <div className="container d-flex align-items-center justify-content-between py-2">
+          <Link to="/" className="sf-intake__brand">{brand}</Link>
           {onHistory && (
             <Button variant="ghost-secondary" size="sm" onClick={onHistory}>
               Past visits
             </Button>
           )}
+        </div>
+      </header>
+      <div className="container py-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h1 className="h2 mb-0" role={onHome ? 'button' : undefined} onClick={onHome}>
+            {title}
+          </h1>
         </div>
         {children}
       </div>

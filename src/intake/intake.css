@@ -1,0 +1,22 @@
+/* Order-intake theming. Scoped under .sf-intake so it never leaks into admin.
+   --sf-primary / --tblr-primary are set inline from the tenant's storefront
+   branding colour (see IntakePage Shell) — keeping intake visually consistent
+   with the storefront landing page. */
+.sf-intake {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Brand bar — mirrors the storefront nav brand, links back to the landing page. */
+.sf-intake__bar {
+  border-bottom: 1px solid var(--tblr-border-color, #e6e7e9);
+}
+.sf-intake__brand {
+  font-weight: 800;
+  font-size: 1.15rem;
+  text-decoration: none;
+  color: var(--sf-primary);
+}
+.sf-intake__brand:hover { filter: brightness(0.92); }
+
+/* Section headings adopt the storefront ink/weight. */
+.sf-intake h1 { font-weight: 800; }

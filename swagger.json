@@ -1,46 +1,40 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is the ant microservice.",
-        "title": "Ant API",
+        "description": "This is a microservice for user management.",
+        "title": "Keeper API",
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8082",
+    "host": "localhost:8080",
     "basePath": "/",
     "paths": {
-        "/attributes": {
+        "/apps": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Get a list of all attributes for the authenticated app",
+                "description": "Get a list of all registered apps",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "attributes"
+                    "apps"
                 ],
-                "summary": "List all attributes",
+                "summary": "List all apps",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Max items to return (default 50, max 500)",
+                        "description": "Max results (default 50, max 500)",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Items to skip (default 0)",
+                        "description": "Result offset (default 0)",
                         "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Filter by status (0 or 1)",
-                        "name": "status",
                         "in": "query"
                     }
                 ],
@@ -50,7 +44,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
                                 },
                                 {
                                     "type": "object",
@@ -58,7 +52,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/internal_attribute.Attribute"
+                                                "$ref": "#/definitions/internal_app.App"
                                             }
                                         }
                                     }
@@ -69,13 +63,13 @@
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     }
                 }
@@ -86,7 +80,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "Create a new attribute with optional options",
+                "description": "Create a new app with the provided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -94,17 +88,17 @@
                     "application/json"
                 ],
                 "tags": [
-                    "attributes"
+                    "apps"
                 ],
-                "summary": "Create a new attribute",
+                "summary": "Create a new app",
                 "parameters": [
                     {
-                        "description": "Attribute object",
-                        "name": "body",
+                        "description": "App details",
+                        "name": "app",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_attribute.CreateAttributeRequest"
+                            "$ref": "#/definitions/internal_app.CreateAppRequest"
                         }
                     }
                 ],
@@ -114,13 +108,13 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/internal_attribute.Attribute"
+                                            "$ref": "#/definitions/internal_app.App"
                                         }
                                     }
                                 }
@@ -130,43 +124,43 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     }
                 }
             }
         },
-        "/attributes/{id}": {
+        "/apps/{id}": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Get a single attribute with its options",
+                "description": "Get a single app by its unique ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "attributes"
+                    "apps"
                 ],
-                "summary": "Get attribute by ID",
+                "summary": "Get app by ID",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Attribute ID",
+                        "description": "App ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -178,13 +172,13 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/internal_attribute.Attribute"
+                                            "$ref": "#/definitions/internal_app.App"
                                         }
                                     }
                                 }
@@ -194,25 +188,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     }
                 }
@@ -223,7 +211,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "Atomically update an attribute and sync its options in one call: options with an id are updated, ones without are created, existing options missing from the payload are deleted.",
+                "description": "Update an existing app's details",
                 "consumes": [
                     "application/json"
                 ],
@@ -231,24 +219,24 @@
                     "application/json"
                 ],
                 "tags": [
-                    "attributes"
+                    "apps"
                 ],
-                "summary": "Update attribute by ID",
+                "summary": "Update app",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Attribute ID",
+                        "description": "App ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Attribute object",
-                        "name": "body",
+                        "description": "Updated app details",
+                        "name": "app",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_attribute.UpdateAttributeRequest"
+                            "$ref": "#/definitions/internal_app.UpdateAppRequest"
                         }
                     }
                 ],
@@ -258,13 +246,13 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/internal_attribute.Attribute"
+                                            "$ref": "#/definitions/internal_app.App"
                                         }
                                     }
                                 }
@@ -274,25 +262,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     }
                 }
@@ -303,18 +285,18 @@
                         "Bearer": []
                     }
                 ],
-                "description": "Delete an attribute and its options. Blocked if assigned to any product.",
+                "description": "Remove an app from the system by ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "attributes"
+                    "apps"
                 ],
-                "summary": "Delete attribute by ID",
+                "summary": "Delete app",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Attribute ID",
+                        "description": "App ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -327,31 +309,960 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/divisions": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "List divisions for the caller's app. Filter by parent_id via query param.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "divisions"
+                ],
+                "summary": "List divisions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Filter by parent ID",
+                        "name": "parent_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Max results (default 50, max 500)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Result offset (default 0)",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/internal_division.Division"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new division with optional parent for hierarchical grouping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "divisions"
+                ],
+                "summary": "Create a new division",
+                "parameters": [
+                    {
+                        "description": "Division details",
+                        "name": "division",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_division.CreateDivisionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_division.Division"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/divisions/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a single division by its ID (must belong to caller's app)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "divisions"
+                ],
+                "summary": "Get division by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Division ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_division.Division"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update name or status of an existing division",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "divisions"
+                ],
+                "summary": "Update a division",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Division ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated division details",
+                        "name": "division",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_division.UpdateDivisionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_division.Division"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete a division. Blocked if it has children or assigned users.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "divisions"
+                ],
+                "summary": "Delete a division",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Division ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/divisions/{id}/descendants": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns all divisions in the subtree rooted at the given division",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "divisions"
+                ],
+                "summary": "Get all descendants of a division",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Division ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/internal_division.Division"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/divisions/{id}/move": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Move a division (and its subtree) to a different parent. Set parent_id to null to promote to root.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "divisions"
+                ],
+                "summary": "Move a division to a new parent",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Division ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New parent",
+                        "name": "move",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_division.MoveDivisionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_division.Division"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/guest-keys": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "List guest keys. Non-sysadmins only see keys for their own app.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "guest-keys"
+                ],
+                "summary": "List guest keys",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Max results (default 50, max 500)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Result offset (default 0)",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/internal_guestkey.GuestKey"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a publishable site key bound to an app/division and a designated guest user. Non-sysadmins can only create keys for their own app.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "guest-keys"
+                ],
+                "summary": "Create a new guest key",
+                "parameters": [
+                    {
+                        "description": "Guest key details",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_guestkey.CreateGuestKeyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_guestkey.GuestKey"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/guest-keys/auth": {
+            "post": {
+                "description": "Exchange a publishable site key for a short-lived tenant-scoped guest JWT (role=guest, signed with the guest secret)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "guest-keys"
+                ],
+                "summary": "Exchange a site key for a guest token",
+                "parameters": [
+                    {
+                        "description": "Site key",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_guestkey.GuestAuthRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_guestkey.GuestAuthResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/guest-keys/lookup": {
+            "get": {
+                "description": "Resolve the publishable site key registered for the URL a UI is served from. Public (no auth) and hard rate-limited; returns only the site key, not tenant binding. The url is normalized (scheme/port stripped, host lowercased, host[+path]) and matched exactly.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "guest-keys"
+                ],
+                "summary": "Look up a publishable site key by URL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL the UI is served from (e.g. https://shop.acme.com or acme.com/store)",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_guestkey.SiteKeyLookupResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/guest-keys/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a single guest key by its unique ID. Non-sysadmins can only access keys of their own app.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "guest-keys"
+                ],
+                "summary": "Get guest key by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Guest key ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_guestkey.GuestKey"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a guest key's name or status. Tenant binding and the site key are immutable. Non-sysadmins can only update keys of their own app.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "guest-keys"
+                ],
+                "summary": "Update guest key",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Guest key ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Fields to update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_guestkey.UpdateGuestKeyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_guestkey.GuestKey"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete (revoke) a guest key. Non-sysadmins can only delete keys of their own app.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "guest-keys"
+                ],
+                "summary": "Delete guest key",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Guest key ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     }
                 }
@@ -371,44 +1282,38 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     }
                 }
             }
         },
-        "/order-groups": {
+        "/users": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Get a summary list of order groups (orders_count only) for the authenticated app",
+                "description": "Get a list of all users belonging to the caller's app",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "order-groups"
+                    "users"
                 ],
-                "summary": "List all order groups",
+                "summary": "List all users",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Max items to return (default 50, max 500)",
+                        "description": "Max results (default 50, max 500)",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Items to skip (default 0)",
+                        "description": "Result offset (default 0)",
                         "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Filter by status (1=open, 2=closed, 3=paid, 4=cancelled)",
-                        "name": "status",
                         "in": "query"
                     }
                 ],
@@ -418,7 +1323,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
                                 },
                                 {
                                     "type": "object",
@@ -426,7 +1331,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/internal_ordergroup.OrderGroup"
+                                                "$ref": "#/definitions/internal_user.User"
                                             }
                                         }
                                     }
@@ -437,13 +1342,13 @@
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     }
                 }
@@ -454,7 +1359,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "Create an order group (tab) under which multiple orders can be clubbed and settled together. A unique token is generated for the group.",
+                "description": "Create a new user with the provided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -462,17 +1367,17 @@
                     "application/json"
                 ],
                 "tags": [
-                    "order-groups"
+                    "users"
                 ],
-                "summary": "Create a new order group",
+                "summary": "Create a new user",
                 "parameters": [
                     {
-                        "description": "Order group object",
-                        "name": "body",
+                        "description": "User details",
+                        "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_ordergroup.CreateOrderGroupRequest"
+                            "$ref": "#/definitions/internal_user.CreateUserRequest"
                         }
                     }
                 ],
@@ -482,13 +1387,13 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/internal_ordergroup.OrderGroup"
+                                            "$ref": "#/definitions/internal_user.User"
                                         }
                                     }
                                 }
@@ -498,387 +1403,27 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     }
                 }
             }
         },
-        "/order-groups/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a single order group with its member orders and the combined total",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "order-groups"
-                ],
-                "summary": "Get order group by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Order Group ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_ordergroup.OrderGroup"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update the order group's label. Status is managed via /order-groups/{id}/status.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "order-groups"
-                ],
-                "summary": "Update order group by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Order Group ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Order group object",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_ordergroup.UpdateOrderGroupRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_ordergroup.OrderGroup"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete an order group. Member orders are detached (kept as standalone orders), not deleted.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "order-groups"
-                ],
-                "summary": "Delete order group by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Order Group ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/order-groups/{id}/status": {
-            "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Set the group status (1=open, 2=closed, 3=paid, 4=cancelled)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "order-groups"
-                ],
-                "summary": "Set order group status",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Order Group ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Status object",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_ordergroup.UpdateOrderGroupStatusRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_ordergroup.OrderGroup"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/orders": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a summary list of orders (no items, products_count only) for the authenticated app",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "orders"
-                ],
-                "summary": "List all orders",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max items to return (default 50, max 500)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Items to skip (default 0)",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Filter by status (1=pending, 2=confirmed, 3=completed, 4=cancelled, 5=paid)",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/internal_order.Order"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            },
+        "/users/auth": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create an order with one or more items. Items snapshot the product name, price and chosen attribute values; only active products can be added.",
+                "description": "Login with email and password to receive a JWT token",
                 "consumes": [
                     "application/json"
                 ],
@@ -886,33 +1431,33 @@
                     "application/json"
                 ],
                 "tags": [
-                    "orders"
+                    "users"
                 ],
-                "summary": "Create a new order",
+                "summary": "Authenticate user",
                 "parameters": [
                     {
-                        "description": "Order object",
-                        "name": "body",
+                        "description": "Login credentials",
+                        "name": "credentials",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_order.CreateOrderRequest"
+                            "$ref": "#/definitions/internal_user.AuthRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/internal_order.Order"
+                                            "$ref": "#/definitions/internal_user.AuthResponse"
                                         }
                                     }
                                 }
@@ -922,43 +1467,37 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     }
                 }
             }
         },
-        "/orders/{id}": {
+        "/users/{id}": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Get a single order with its items",
+                "description": "Get a single user by their unique ID (must belong to caller's app)",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "orders"
+                    "users"
                 ],
-                "summary": "Get order by ID",
+                "summary": "Get user by ID",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Order ID",
+                        "description": "User ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -970,13 +1509,13 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/internal_order.Order"
+                                            "$ref": "#/definitions/internal_user.User"
                                         }
                                     }
                                 }
@@ -986,907 +1525,36 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Atomically update customer details and sync items in one call. Items with an id update quantity only (product/attributes immutable); items without an id are added; existing items missing from the payload are deleted. Status is managed via /orders/{id}/status.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "orders"
-                ],
-                "summary": "Update order by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Order ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Order object",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_order.UpdateOrderRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_order.Order"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete an order and all its items",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "orders"
-                ],
-                "summary": "Delete order by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Order ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/orders/{id}/group": {
-            "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Set group_id to attach the order to an order group (tab), or omit/null to detach it.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "orders"
-                ],
-                "summary": "Attach/detach order to a group",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Order ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Group assignment",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_order.SetOrderGroupRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_order.Order"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/orders/{id}/status": {
-            "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Set the order status (1=pending, 2=confirmed, 3=completed, 4=cancelled, 5=paid)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "orders"
-                ],
-                "summary": "Set order status",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Order ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Status object",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_order.UpdateOrderStatusRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_order.Order"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/products": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a list of all products for the authenticated app",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "products"
-                ],
-                "summary": "List all products",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max items to return (default 50, max 500)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Items to skip (default 0)",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Filter by status (0 or 1)",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/internal_product.Product"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new product with attribute assignments. Only active attributes can be assigned.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "products"
-                ],
-                "summary": "Create a new product",
-                "parameters": [
-                    {
-                        "description": "Product object",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_product.CreateProductRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_product.Product"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/products/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a single product with its assigned attributes and their options",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "products"
-                ],
-                "summary": "Get product by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Product ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_product.Product"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update an existing product. The attributes array replaces all assignments (full sync).",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "products"
-                ],
-                "summary": "Update product by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Product ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Product object",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_product.UpdateProductRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_product.Product"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete a product and its attribute assignments. Blocked if the product is used in any order.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "products"
-                ],
-                "summary": "Delete product by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Product ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/public/order-groups": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Creates a tab (order group) on behalf of a guest-token caller and returns its server-minted token, which can be shared so other family members place orders under the same tab. Protected by reCAPTCHA and a hidden honeypot field.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Public"
-                ],
-                "summary": "Create an order group (public)",
-                "parameters": [
-                    {
-                        "description": "Order group object",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_ordergroup.CreatePublicOrderGroupRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_ordergroup.OrderGroup"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/public/order-groups/history": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Returns past tabs (order groups, newest first) that contain at least one order placed by the given device, each hydrated with all of its orders and the combined total. Recognition is best-effort: device_id is a soft, client-supplied signal, not proof of identity.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Public"
-                ],
-                "summary": "List order history for a device (public)",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Client device identifier",
-                        "name": "device_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Max items to return (default 50, max 500)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Items to skip (default 0)",
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/internal_ordergroup.OrderGroup"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/public/order-groups/{token}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Returns the tab identified by the shareable token, including all member orders and the combined total. Used by the order-intake page so a family member who has the token can view the whole tab.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Public"
-                ],
-                "summary": "Get an order group by token (public)",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Order group token",
-                        "name": "token",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/internal_ordergroup.OrderGroup"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     }
                 }
-            }
-        },
-        "/public/orders": {
-            "post": {
+            },
+            "put": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Creates a pending order on behalf of a guest-token caller, optionally attaching it to an existing group (group_id) or auto-minting a new one. The order is always created pending — confirmation and payment are done at reception. Protected by reCAPTCHA, a hidden honeypot field, and a per-device volume cap.",
+                "description": "Update an existing user's details (must belong to caller's app)",
                 "consumes": [
                     "application/json"
                 ],
@@ -1894,33 +1562,40 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Public"
+                    "users"
                 ],
-                "summary": "Create an order (public)",
+                "summary": "Update user",
                 "parameters": [
                     {
-                        "description": "Order object",
-                        "name": "body",
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated user details",
+                        "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_order.CreatePublicOrderRequest"
+                            "$ref": "#/definitions/internal_user.UpdateUserRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/ant_internal_platform_render.Response"
+                                    "$ref": "#/definitions/keeper_pkg_render.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/internal_order.Order"
+                                            "$ref": "#/definitions/internal_user.User"
                                         }
                                     }
                                 }
@@ -1930,31 +1605,78 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
-                        }
-                    },
-                    "429": {
-                        "description": "Too Many Requests",
-                        "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/ant_internal_platform_render.Response"
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Remove a user from the system by ID (must belong to caller's app)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/keeper_pkg_render.Response"
                         }
                     }
                 }
@@ -1962,7 +1684,366 @@
         }
     },
     "definitions": {
-        "ant_internal_platform_render.Response": {
+        "internal_app.App": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_app.CreateAppRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_app.UpdateAppRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_division.CreateDivisionRequest": {
+            "type": "object",
+            "required": [
+                "app_id",
+                "name"
+            ],
+            "properties": {
+                "app_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "parent_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_division.Division": {
+            "type": "object",
+            "properties": {
+                "app_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "depth": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_division.MoveDivisionRequest": {
+            "type": "object",
+            "properties": {
+                "parent_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_division.UpdateDivisionRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "status": {
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ]
+                }
+            }
+        },
+        "internal_guestkey.CreateGuestKeyRequest": {
+            "type": "object",
+            "required": [
+                "app_id",
+                "division_id",
+                "domain",
+                "name",
+                "user_id"
+            ],
+            "properties": {
+                "app_id": {
+                    "type": "integer"
+                },
+                "division_id": {
+                    "type": "integer"
+                },
+                "domain": {
+                    "description": "Domain is the URL the publishable UI is served from. It is normalized\nserver-side (scheme/port stripped, host lowercased, host[+path]) and\nmust be unique — a public URL lookup resolves to exactly one site key.",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_guestkey.GuestAuthRequest": {
+            "type": "object",
+            "required": [
+                "site_key"
+            ],
+            "properties": {
+                "site_key": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_guestkey.GuestAuthResponse": {
+            "type": "object",
+            "properties": {
+                "expires_at": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_guestkey.GuestKey": {
+            "type": "object",
+            "properties": {
+                "app_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "division_id": {
+                    "type": "integer"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "site_key": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_guestkey.SiteKeyLookupResponse": {
+            "type": "object",
+            "properties": {
+                "site_key": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_guestkey.UpdateGuestKeyRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_user.AuthRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_user.AuthResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/internal_user.User"
+                }
+            }
+        },
+        "internal_user.CreateUserRequest": {
+            "type": "object",
+            "required": [
+                "app_id",
+                "division_id",
+                "email",
+                "firstname",
+                "lastname",
+                "password"
+            ],
+            "properties": {
+                "app_id": {
+                    "type": "integer"
+                },
+                "division_id": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8
+                },
+                "role": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_user.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "app_id": {
+                    "type": "integer"
+                },
+                "division_id": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8
+                },
+                "role": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_user.User": {
+            "type": "object",
+            "properties": {
+                "app_id": {
+                    "type": "integer"
+                },
+                "app_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "division_id": {
+                    "type": "integer"
+                },
+                "division_name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "keeper_pkg_render.Response": {
             "type": "object",
             "properties": {
                 "data": {},
@@ -1971,775 +2052,6 @@
                 },
                 "status": {
                     "type": "integer"
-                }
-            }
-        },
-        "internal_attribute.Attribute": {
-            "type": "object",
-            "properties": {
-                "app_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "options": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_attribute.Option"
-                    }
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_attribute.CreateAttributeRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "options": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_attribute.CreateOptionRequest"
-                    }
-                },
-                "status": {
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1
-                    ]
-                }
-            }
-        },
-        "internal_attribute.CreateOptionRequest": {
-            "type": "object",
-            "required": [
-                "value"
-            ],
-            "properties": {
-                "value": {
-                    "type": "string",
-                    "maxLength": 100
-                }
-            }
-        },
-        "internal_attribute.Option": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_attribute.SyncOptionRequest": {
-            "type": "object",
-            "required": [
-                "value"
-            ],
-            "properties": {
-                "id": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "value": {
-                    "type": "string",
-                    "maxLength": 100
-                }
-            }
-        },
-        "internal_attribute.UpdateAttributeRequest": {
-            "type": "object",
-            "required": [
-                "name",
-                "status"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "options": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_attribute.SyncOptionRequest"
-                    }
-                },
-                "status": {
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1
-                    ]
-                }
-            }
-        },
-        "internal_order.CreateOrderRequest": {
-            "type": "object",
-            "required": [
-                "customer_contact",
-                "customer_name",
-                "products"
-            ],
-            "properties": {
-                "customer_contact": {
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 7
-                },
-                "customer_name": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "device_id": {
-                    "description": "DeviceID identifies the client device for returning-customer recognition\non the public order-intake page. Optional; the IP is captured server-side.",
-                    "type": "string",
-                    "maxLength": 64
-                },
-                "group_id": {
-                    "description": "GroupID attaches the order to an existing group (tab). When omitted, a\nnew group is minted in the same transaction and attached automatically;\nits token is returned in the order's group_token so the UI can reuse it\nto attach later orders to the same tab.",
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "group_label": {
-                    "description": "GroupLabel optionally names the tab when a new group is auto-created\n(ignored when group_id is supplied).",
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "ordered_at": {
-                    "description": "OrderedAt sets the business order date; defaults to now when omitted.",
-                    "type": "string"
-                },
-                "products": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/internal_order.OrderItemRequest"
-                    }
-                },
-                "status": {
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2,
-                        3,
-                        4,
-                        5
-                    ]
-                },
-                "tax_percent": {
-                    "description": "TaxPercent is the order tax rate as a percentage (0–100). Defaults to 0\nwhen omitted.",
-                    "type": "number",
-                    "maximum": 100,
-                    "minimum": 0
-                }
-            }
-        },
-        "internal_order.CreatePublicOrderRequest": {
-            "type": "object",
-            "required": [
-                "customer_contact",
-                "customer_name",
-                "products"
-            ],
-            "properties": {
-                "customer_contact": {
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 7
-                },
-                "customer_name": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "device_id": {
-                    "description": "DeviceID identifies the client device for returning-customer recognition\non the public order-intake page. Optional; the IP is captured server-side.",
-                    "type": "string",
-                    "maxLength": 64
-                },
-                "group_id": {
-                    "description": "GroupID attaches the order to an existing group (tab). When omitted, a\nnew group is minted in the same transaction and attached automatically;\nits token is returned in the order's group_token so the UI can reuse it\nto attach later orders to the same tab.",
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "group_label": {
-                    "description": "GroupLabel optionally names the tab when a new group is auto-created\n(ignored when group_id is supplied).",
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "ordered_at": {
-                    "description": "OrderedAt sets the business order date; defaults to now when omitted.",
-                    "type": "string"
-                },
-                "products": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/internal_order.OrderItemRequest"
-                    }
-                },
-                "status": {
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2,
-                        3,
-                        4,
-                        5
-                    ]
-                },
-                "tax_percent": {
-                    "description": "TaxPercent is the order tax rate as a percentage (0–100). Defaults to 0\nwhen omitted.",
-                    "type": "number",
-                    "maximum": 100,
-                    "minimum": 0
-                },
-                "website": {
-                    "type": "string",
-                    "maxLength": 0
-                }
-            }
-        },
-        "internal_order.Order": {
-            "type": "object",
-            "properties": {
-                "app_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "customer_contact": {
-                    "type": "string"
-                },
-                "customer_name": {
-                    "type": "string"
-                },
-                "device_id": {
-                    "description": "DeviceID is the client-supplied device identifier used for returning-\ncustomer recognition on the public order-intake page.",
-                    "type": "string"
-                },
-                "division_id": {
-                    "type": "integer"
-                },
-                "group_id": {
-                    "type": "integer"
-                },
-                "group_token": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "ip_address": {
-                    "description": "IPAddress is the client IP captured server-side at creation. Read-only.",
-                    "type": "string"
-                },
-                "ordered_at": {
-                    "type": "string"
-                },
-                "products": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_order.OrderItem"
-                    }
-                },
-                "products_count": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "tax_percent": {
-                    "description": "TaxPercent is the tax rate applied to the order as a percentage\n(e.g. 18.5 = 18.5%). Range 0–100.",
-                    "type": "number"
-                },
-                "total": {
-                    "description": "Total is the pre-tax order amount: sum over items of (base price + chosen\noption deltas) * quantity. Persisted as a denormalized column and\nmaintained on every item change, so it is populated on both list and\ndetail reads.",
-                    "type": "number"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_order.OrderItem": {
-            "type": "object",
-            "properties": {
-                "attributes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_order.OrderItemAttribute"
-                    }
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "line_total": {
-                    "description": "LineTotal is (Price + sum of attribute PriceDelta) * Quantity.",
-                    "type": "number"
-                },
-                "price": {
-                    "type": "number"
-                },
-                "product_id": {
-                    "type": "integer"
-                },
-                "product_name": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_order.OrderItemAttribute": {
-            "type": "object",
-            "properties": {
-                "attribute_id": {
-                    "type": "integer"
-                },
-                "attribute_name": {
-                    "type": "string"
-                },
-                "option_id": {
-                    "type": "integer"
-                },
-                "option_value": {
-                    "type": "string"
-                },
-                "price_delta": {
-                    "type": "number"
-                }
-            }
-        },
-        "internal_order.OrderItemAttributeRequest": {
-            "type": "object",
-            "required": [
-                "attribute_id",
-                "option_id"
-            ],
-            "properties": {
-                "attribute_id": {
-                    "type": "integer"
-                },
-                "option_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_order.OrderItemRequest": {
-            "type": "object",
-            "required": [
-                "product_id",
-                "quantity"
-            ],
-            "properties": {
-                "attributes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_order.OrderItemAttributeRequest"
-                    }
-                },
-                "product_id": {
-                    "type": "integer"
-                },
-                "quantity": {
-                    "type": "integer",
-                    "minimum": 1
-                }
-            }
-        },
-        "internal_order.SetOrderGroupRequest": {
-            "type": "object",
-            "required": [
-                "group_id"
-            ],
-            "properties": {
-                "group_id": {
-                    "type": "integer",
-                    "minimum": 1
-                }
-            }
-        },
-        "internal_order.SyncOrderItemRequest": {
-            "type": "object",
-            "required": [
-                "quantity"
-            ],
-            "properties": {
-                "attributes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_order.OrderItemAttributeRequest"
-                    }
-                },
-                "id": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "product_id": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "quantity": {
-                    "type": "integer",
-                    "minimum": 1
-                }
-            }
-        },
-        "internal_order.UpdateOrderRequest": {
-            "type": "object",
-            "required": [
-                "customer_contact",
-                "customer_name",
-                "products"
-            ],
-            "properties": {
-                "customer_contact": {
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 7
-                },
-                "customer_name": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "ordered_at": {
-                    "type": "string"
-                },
-                "products": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/internal_order.SyncOrderItemRequest"
-                    }
-                },
-                "tax_percent": {
-                    "description": "TaxPercent is the order tax rate as a percentage (0–100). When omitted the\nexisting value is preserved.",
-                    "type": "number",
-                    "maximum": 100,
-                    "minimum": 0
-                }
-            }
-        },
-        "internal_order.UpdateOrderStatusRequest": {
-            "type": "object",
-            "required": [
-                "status"
-            ],
-            "properties": {
-                "status": {
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2,
-                        3,
-                        4,
-                        5
-                    ]
-                }
-            }
-        },
-        "internal_ordergroup.CreateOrderGroupRequest": {
-            "type": "object",
-            "properties": {
-                "label": {
-                    "type": "string",
-                    "maxLength": 100
-                }
-            }
-        },
-        "internal_ordergroup.CreatePublicOrderGroupRequest": {
-            "type": "object",
-            "properties": {
-                "label": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "website": {
-                    "type": "string",
-                    "maxLength": 0
-                }
-            }
-        },
-        "internal_ordergroup.OrderGroup": {
-            "type": "object",
-            "properties": {
-                "app_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "division_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "label": {
-                    "type": "string"
-                },
-                "orders": {
-                    "description": "Orders is the member order summary list. Populated on detail reads.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_ordergroup.OrderSummary"
-                    }
-                },
-                "orders_count": {
-                    "description": "OrdersCount is the number of orders in the group.",
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "token": {
-                    "type": "string"
-                },
-                "total": {
-                    "description": "Total is the sum of all member orders' totals. Populated on detail reads.",
-                    "type": "number"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_ordergroup.OrderSummary": {
-            "type": "object",
-            "properties": {
-                "customer_name": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "ordered_at": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "number"
-                }
-            }
-        },
-        "internal_ordergroup.UpdateOrderGroupRequest": {
-            "type": "object",
-            "properties": {
-                "label": {
-                    "type": "string",
-                    "maxLength": 100
-                }
-            }
-        },
-        "internal_ordergroup.UpdateOrderGroupStatusRequest": {
-            "type": "object",
-            "required": [
-                "status"
-            ],
-            "properties": {
-                "status": {
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2,
-                        3,
-                        4
-                    ]
-                }
-            }
-        },
-        "internal_product.AssignedAttribute": {
-            "type": "object",
-            "properties": {
-                "attribute_id": {
-                    "type": "integer"
-                },
-                "is_mandatory": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "options": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_product.AttributeOption"
-                    }
-                }
-            }
-        },
-        "internal_product.AttributeAssignmentRequest": {
-            "type": "object",
-            "required": [
-                "attribute_id"
-            ],
-            "properties": {
-                "attribute_id": {
-                    "type": "integer"
-                },
-                "is_mandatory": {
-                    "type": "boolean"
-                },
-                "options": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_product.AttributeOptionRequest"
-                    }
-                }
-            }
-        },
-        "internal_product.AttributeOption": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "price_delta": {
-                    "type": "number"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_product.AttributeOptionRequest": {
-            "type": "object",
-            "required": [
-                "option_id"
-            ],
-            "properties": {
-                "option_id": {
-                    "type": "integer"
-                },
-                "price_delta": {
-                    "type": "number"
-                }
-            }
-        },
-        "internal_product.CreateProductRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "attributes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_product.AttributeAssignmentRequest"
-                    }
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 200
-                },
-                "price": {
-                    "type": "number",
-                    "minimum": 0
-                },
-                "status": {
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1
-                    ]
-                }
-            }
-        },
-        "internal_product.Product": {
-            "type": "object",
-            "properties": {
-                "app_id": {
-                    "type": "integer"
-                },
-                "attributes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_product.AssignedAttribute"
-                    }
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "number"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_product.UpdateProductRequest": {
-            "type": "object",
-            "required": [
-                "name",
-                "status"
-            ],
-            "properties": {
-                "attributes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/internal_product.AttributeAssignmentRequest"
-                    }
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 200
-                },
-                "price": {
-                    "type": "number",
-                    "minimum": 0
-                },
-                "status": {
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1
-                    ]
                 }
             }
         }
@@ -2751,11 +2063,5 @@
             "name": "Authorization",
             "in": "header"
         }
-    },
-    "tags": [
-        {
-            "description": "Endpoints under the /public prefix, reachable with keeper guest tokens via the order-intake listener.",
-            "name": "Public"
-        }
-    ]
+    }
 }

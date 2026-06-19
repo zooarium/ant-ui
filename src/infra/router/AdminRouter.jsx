@@ -1,47 +1,37 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { PrivateRoute, PublicRoute, RootRedirect, Spinner } from '@aviary-ui/ui';
+import { PrivateRoute, PublicRoute, RootRedirect } from '@aviary-ui/ui';
 import { ADMIN_PATHS } from '@/config/nav';
+import PageLoader from '@/infra/router/PageLoader';
 
-const WelcomePage = lazy(() => import('../../pages/WelcomePage'));
-const LoginPage = lazy(() => import('../../pages/LoginPage'));
-const DashboardPage = lazy(() => import('../../pages/DashboardPage'));
-const AttributesPage = lazy(() => import('../../pages/AttributesPage'));
-const AttributeDetailPage = lazy(() => import('../../pages/AttributeDetailPage'));
-const ProductsPage = lazy(() => import('../../pages/ProductsPage'));
-const ProductDetailPage = lazy(() => import('../../pages/ProductDetailPage'));
-const OrdersPage = lazy(() => import('../../pages/OrdersPage'));
-const OrderDetailPage = lazy(() => import('../../pages/OrderDetailPage'));
-const OrderGroupDetailPage = lazy(() => import('../../pages/OrderGroupDetailPage'));
-
-// Public order-intake flow (guest token). Self-contained — no admin auth guards.
-const IntakePage = lazy(() => import('@/intake/pages/IntakePage'));
-
-function PageLoader() {
-  return (
-    <div className="d-flex justify-content-center align-items-center vh-100">
-      <Spinner />
-    </div>
-  );
-}
+const LoginPage = lazy(() => import('@/pages/LoginPage'));
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
+const AttributesPage = lazy(() => import('@/pages/AttributesPage'));
+const AttributeDetailPage = lazy(() => import('@/pages/AttributeDetailPage'));
+const ProductsPage = lazy(() => import('@/pages/ProductsPage'));
+const ProductDetailPage = lazy(() => import('@/pages/ProductDetailPage'));
+const OrdersPage = lazy(() => import('@/pages/OrdersPage'));
+const OrderDetailPage = lazy(() => import('@/pages/OrderDetailPage'));
+const OrderGroupDetailPage = lazy(() => import('@/pages/OrderGroupDetailPage'));
 
 // Wrap a page in PrivateRoute with the admin login path.
 function Private({ children }) {
   return <PrivateRoute loginPath={ADMIN_PATHS.login}>{children}</PrivateRoute>;
 }
 
-export default function AppRouter() {
+// Admin app — served on its own domain (e.g. admin.shop.com). Tenant is
+// recognized from the login JWT (app_id/division_id claims), so there is no
+// site-key lookup or URL tenant resolution here. basename stays "/".
+export default function AdminRouter() {
   return (
     <BrowserRouter>
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          {/* Public site (root domain) — customer-facing pages live here */}
-          <Route path="/" element={<WelcomePage />} />
-
-          {/* Public order intake — no login; guest token handled inside the module */}
-          <Route path="/intake" element={<IntakePage />} />
-
-          {/* Admin app — everything (incl. login) under /admin */}
+          {/* Root → dashboard if authed, else login */}
+          <Route
+            path="/"
+            element={<RootRedirect homePath={ADMIN_PATHS.dashboard} loginPath={ADMIN_PATHS.login} />}
+          />
           <Route
             path="/admin"
             element={<RootRedirect homePath={ADMIN_PATHS.dashboard} loginPath={ADMIN_PATHS.login} />}
