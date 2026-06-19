@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,6 +13,7 @@ import {
   useNotification,
 } from '@aviary-ui/ui';
 import { useAttributes, useAttribute } from '@/hooks/useAttributes';
+import { useCategories } from '@/hooks/useCategories';
 
 const optionSchema = z.object({
   option_id: z.number().int(),
@@ -26,6 +27,8 @@ const productSchema = z
     name: z.string().min(1, 'Name is required').max(200, 'Max 200 characters'),
     price: z.coerce.number().min(0, 'Price must be 0 or more'),
     status: z.coerce.number().int().min(0).max(1),
+    // 0 = no category (optional).
+    category_id: z.coerce.number().int().min(0),
     attributes: z.array(
       z.object({
         attribute_id: z.coerce.number().int().min(1, 'Pick an attribute'),
@@ -48,7 +51,7 @@ const productSchema = z
     });
   });
 
-const emptyValues = { name: '', price: 0, status: 1, attributes: [] };
+const emptyValues = { name: '', price: 0, status: 1, category_id: 0, attributes: [] };
 
 // One assigned-attribute row: attribute picker + mandatory flag + the allowed
 // option subset with per-option price deltas. Loads the attribute's live option
@@ -165,6 +168,14 @@ export default function ProductFormModal({ isOpen, onClose, product, onSubmit })
   // Active attributes for the picker. 500 = API max page size.
   const { attributes: activeAttributes } = useAttributes({ limit: 500, offset: 0, status: 1 });
 
+  // Active categories for the category picker, ordered by path so options read
+  // in tree order; labelled by `display` (name + ancestor hierarchy).
+  const { categories } = useCategories({ limit: 500, offset: 0, status: 1 });
+  const categoryOptions = useMemo(
+    () => [...categories].sort((a, b) => (a.path ?? '').localeCompare(b.path ?? '')),
+    [categories],
+  );
+
   const {
     register,
     control,
@@ -190,6 +201,7 @@ export default function ProductFormModal({ isOpen, onClose, product, onSubmit })
             name: product.name,
             price: product.price ?? 0,
             status: product.status,
+            category_id: product.category_id ?? 0,
             attributes: (product.attributes ?? []).map((a) => ({
               attribute_id: a.attribute_id,
               is_mandatory: !!a.is_mandatory,
@@ -210,6 +222,8 @@ export default function ProductFormModal({ isOpen, onClose, product, onSubmit })
       name: values.name.trim(),
       price: values.price,
       status: values.status,
+      // Optional: 0 → no category (send null to clear/leave unset).
+      category_id: values.category_id ? values.category_id : null,
       attributes: values.attributes.map((a) => ({
         attribute_id: a.attribute_id,
         is_mandatory: a.is_mandatory,
@@ -261,6 +275,21 @@ export default function ProductFormModal({ isOpen, onClose, product, onSubmit })
             </FormField>
           </div>
         </div>
+
+        <FormField label="Category" htmlFor="productCategory" error={errors.category_id?.message}>
+          <Select
+            id="productCategory"
+            error={errors.category_id?.message}
+            {...register('category_id')}
+          >
+            <option value={0}>— None —</option>
+            {categoryOptions.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.display}
+              </option>
+            ))}
+          </Select>
+        </FormField>
 
         <div className="mb-3">
           <div className="d-flex align-items-center justify-content-between mb-2">

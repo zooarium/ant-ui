@@ -1,10 +1,17 @@
-import { IconLayoutDashboard, IconTag, IconPackage, IconShoppingCart } from '@aviary-ui/ui';
+import {
+  IconLayoutDashboard,
+  IconTag,
+  IconCategory,
+  IconPackage,
+  IconShoppingCart,
+} from '@aviary-ui/ui';
 
 // All admin routes live under /admin — root "/" is reserved for the public site.
 export const ADMIN_PATHS = {
   login: '/admin/login',
   dashboard: '/admin/dashboard',
   attributes: '/admin/attributes',
+  categories: '/admin/categories',
   products: '/admin/products',
   orders: '/admin/orders',
   // Order groups (tabs) — reached via the Orders page "Group" tab, no sidebar item.
@@ -16,6 +23,7 @@ export const ADMIN_PATHS = {
 export const NAV_ITEMS = [
   { path: ADMIN_PATHS.dashboard, label: 'Dashboard', Icon: IconLayoutDashboard },
   { path: ADMIN_PATHS.attributes, label: 'Attributes', Icon: IconTag },
+  { path: ADMIN_PATHS.categories, label: 'Categories', Icon: IconCategory },
   { path: ADMIN_PATHS.products, label: 'Products', Icon: IconPackage },
   { path: ADMIN_PATHS.orders, label: 'Orders', Icon: IconShoppingCart },
 ];

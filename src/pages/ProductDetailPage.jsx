@@ -112,6 +112,12 @@ export default function ProductDetailPage() {
                   <div className="datagrid-content">{Number(product.price ?? 0).toFixed(2)}</div>
                 </div>
                 <div className="datagrid-item">
+                  <div className="datagrid-title">Category</div>
+                  <div className="datagrid-content">
+                    {product.category?.display ?? '—'}
+                  </div>
+                </div>
+                <div className="datagrid-item">
                   <div className="datagrid-title">Status</div>
                   <div className="datagrid-content">
                     <Badge color={product.status === 1 ? 'success' : 'secondary'}>

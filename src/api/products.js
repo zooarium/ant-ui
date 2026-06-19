@@ -14,10 +14,11 @@ export function fetchProduct(id) {
   return apiRequest(`/products/${id}`);
 }
 
-// payload: { name, price, status, attributes: [{ attribute_id, is_mandatory,
-//   options: [{ option_id, price_delta }] }] }
-// Each assignment defines the allowed option subset with per-option price deltas.
-// Only active attributes can be assigned.
+// payload: { name, price, status, category_id?, attributes: [{ attribute_id,
+//   is_mandatory, options: [{ option_id, price_delta }] }] }
+// category_id is optional (omit/null for none). Each assignment defines the
+// allowed option subset with per-option price deltas. Only active attributes
+// can be assigned.
 export function createProduct(payload) {
   return apiRequest('/products', {
     method: 'POST',

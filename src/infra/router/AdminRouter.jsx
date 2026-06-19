@@ -8,6 +8,8 @@ const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const AttributesPage = lazy(() => import('@/pages/AttributesPage'));
 const AttributeDetailPage = lazy(() => import('@/pages/AttributeDetailPage'));
+const CategoriesPage = lazy(() => import('@/pages/CategoriesPage'));
+const CategoryDetailPage = lazy(() => import('@/pages/CategoryDetailPage'));
 const ProductsPage = lazy(() => import('@/pages/ProductsPage'));
 const ProductDetailPage = lazy(() => import('@/pages/ProductDetailPage'));
 const OrdersPage = lazy(() => import('@/pages/OrdersPage'));
@@ -47,6 +49,8 @@ export default function AdminRouter() {
           <Route path={ADMIN_PATHS.dashboard} element={<Private><DashboardPage /></Private>} />
           <Route path={ADMIN_PATHS.attributes} element={<Private><AttributesPage /></Private>} />
           <Route path={`${ADMIN_PATHS.attributes}/:id`} element={<Private><AttributeDetailPage /></Private>} />
+          <Route path={ADMIN_PATHS.categories} element={<Private><CategoriesPage /></Private>} />
+          <Route path={`${ADMIN_PATHS.categories}/:id`} element={<Private><CategoryDetailPage /></Private>} />
           <Route path={ADMIN_PATHS.products} element={<Private><ProductsPage /></Private>} />
           <Route path={`${ADMIN_PATHS.products}/:id`} element={<Private><ProductDetailPage /></Private>} />
           <Route path={ADMIN_PATHS.orders} element={<Private><OrdersPage /></Private>} />
