@@ -3,9 +3,29 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 
+// Dev-only: this is a multi-page app (public index.html + admin admin.html).
+// Vite's SPA fallback serves index.html for unknown paths, so admin deep-links
+// like /admin/login or /admin/impersonate/exchange would load the PUBLIC app.
+// Rewrite any /admin* request to admin.html so the admin entry is served; the
+// browser URL is untouched, so the admin client router reads the real path.
+// In production the admin bundle is served on its own domain, so this is N/A.
+const adminHtmlFallback = {
+  name: 'admin-html-fallback',
+  configureServer(server) {
+    server.middlewares.use((req, _res, next) => {
+      const url = req.url || '';
+      if (url === '/admin' || url.startsWith('/admin/') || url.startsWith('/admin?')) {
+        req.url = '/admin.html';
+      }
+      next();
+    });
+  },
+};
+
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
+    adminHtmlFallback,
     mode === 'analyze' &&
       visualizer({ filename: 'stats.html', open: false, gzipSize: true, brotliSize: true, template: 'treemap' }),
   ].filter(Boolean),

@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { PrivateRoute, PublicRoute, RootRedirect } from '@aviary-ui/ui';
+import { PrivateRoute, PublicRoute, RootRedirect, ImpersonationExchange } from '@aviary-ui/ui';
 import { ADMIN_PATHS } from '@/config/nav';
 import PageLoader from '@/infra/router/PageLoader';
 
@@ -45,6 +45,12 @@ export default function AdminRouter() {
                 <LoginPage />
               </PublicRoute>
             }
+          />
+          {/* Impersonation handoff landing: a sysadmin "logging in as a user"
+              from keeper-ui lands here with a one-time code in the URL fragment. */}
+          <Route
+            path={ADMIN_PATHS.impersonateExchange}
+            element={<ImpersonationExchange redirectTo={ADMIN_PATHS.dashboard} loginPath={ADMIN_PATHS.login} />}
           />
           <Route path={ADMIN_PATHS.dashboard} element={<Private><DashboardPage /></Private>} />
           <Route path={ADMIN_PATHS.attributes} element={<Private><AttributesPage /></Private>} />

@@ -14,6 +14,8 @@ configure({
   authBase: import.meta.env.VITE_API_URL,
   refreshPath: import.meta.env.VITE_REFRESH_PATH ?? '/users/refresh',
   loginPath: '/admin/login',
+  // When an impersonation session ends, return to the admin dashboard.
+  impersonationExitPath: '/admin/dashboard',
 });
 
 // Optional: enable MSW mock API in dev (no backend needed).

@@ -16,6 +16,8 @@ export const ADMIN_PATHS = {
   orders: '/admin/orders',
   // Order groups (tabs) — reached via the Orders page "Group" tab, no sidebar item.
   orderGroups: '/admin/order-groups',
+  // Impersonation handoff landing (no sidebar item).
+  impersonateExchange: '/admin/impersonate/exchange',
 };
 
 // Navigation items passed to AppLayout.
