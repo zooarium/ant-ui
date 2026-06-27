@@ -58,7 +58,7 @@ export default function Ratings({ ratings }) {
               >
                 <PlatformMark platform={p} size={18} />
                 <span>{p.name}</span>
-                <span className="sf-rating-tab__score">{p.score.toFixed(1)}</span>
+                <span className="sf-rating-tab__score">{(p.score ?? 0).toFixed(1)}</span>
               </button>
             ))}
           </div>
@@ -66,11 +66,13 @@ export default function Ratings({ ratings }) {
 
         <div className="sf-google-rating">
           <PlatformMark platform={current} />
-          <span className="sf-google-rating__score">{current.score.toFixed(1)}</span>
-          <Stars score={current.score} size={22} />
-          <span className="sf-google-rating__count">
-            {current.count.toLocaleString()} {current.name} reviews
-          </span>
+          <span className="sf-google-rating__score">{(current.score ?? 0).toFixed(1)}</span>
+          <Stars score={current.score ?? 0} size={22} />
+          {current.count != null && (
+            <span className="sf-google-rating__count">
+              {current.count.toLocaleString()} {current.name} reviews
+            </span>
+          )}
           {current.url && (
             <a className="btn btn-sm btn-outline-secondary ms-2" href={current.url}
                target="_blank" rel="noreferrer">
@@ -81,10 +83,10 @@ export default function Ratings({ ratings }) {
 
         {reviews.length > 0 ? (
           <div className="row g-3 mt-2">
-            {reviews.map((r) => (
-              <div key={r.author} className="col-12 col-md-4">
+            {reviews.map((r, i) => (
+              <div key={`${r.author}-${i}`} className="col-12 col-md-4">
                 <blockquote className="sf-review">
-                  <Stars score={r.score} />
+                  {/* Per-review score has no backend field — text + author only. */}
                   <p className="sf-review__text">“{r.text}”</p>
                   <footer className="sf-review__author">— {r.author}</footer>
                 </blockquote>

@@ -5,8 +5,8 @@ import PageLoader from '@/infra/router/PageLoader';
 import TenantGate from '@/intake/components/TenantGate';
 import TenantNotFoundPage from '@/intake/pages/TenantNotFoundPage';
 
-// Tenant-branded landing ("digital presence"). Dummy data today; swaps to
-// GET /public/storefront when that endpoint ships.
+// Tenant-branded landing ("digital presence"). Fed live by keeper /apps/lookup
+// + ant /public/storefront (see usePublicStorefront).
 const TenantHomePage = lazy(() => import('@/public/storefront/TenantHomePage'));
 // Public order-intake flow (guest token). Self-contained — no admin auth guards.
 const IntakePage = lazy(() => import('@/intake/pages/IntakePage'));

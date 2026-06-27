@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { STOREFRONT } from './data';
+import { Spinner, Alert, Button, IconAlertTriangle } from '@aviary-ui/ui';
+import { usePublicStorefront } from './usePublicStorefront';
 import Hero from './sections/Hero';
 import About from './sections/About';
 import Menu from './sections/Menu';
@@ -17,17 +18,17 @@ const NAV = [
   { id: 'contact', label: 'Contact' },
 ];
 
-// Tenant-branded landing ("digital presence"). Currently fed by dummy data
-// (src/public/storefront/data.js); swap to GET /public/storefront when the
-// endpoint ships — the shape matches.
+// Tenant-branded landing ("digital presence"). Fed live by GET /apps/lookup
+// (keeper) + GET /public/storefront (ant), merged in usePublicStorefront. Every
+// field is placeholder-guarded so a sparse tenant profile still renders.
 export default function TenantHomePage() {
-  const sf = STOREFRONT;
+  const { sf, isLoading, error, refetch } = usePublicStorefront();
   const [scrolled, setScrolled] = useState(false);
 
   // Browser tab title = tenant name (replaces the static "App" from index.html).
   useEffect(() => {
-    if (sf.name) document.title = sf.name;
-  }, [sf.name]);
+    if (sf?.name) document.title = sf.name;
+  }, [sf?.name]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -35,6 +36,29 @@ export default function TenantHomePage() {
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (error || !sf) {
+    return (
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 text-center">
+            <Alert type="error" icon={IconAlertTriangle} className="mb-3">
+              {error || 'Could not load this store. Please try again.'}
+            </Alert>
+            <Button onClick={refetch}>Try again</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="sf" style={{ '--sf-primary': sf.branding?.primaryColor || '#b8482e' }}>

@@ -1,10 +1,24 @@
 import React from 'react';
-import { Badge } from '@aviary-ui/ui';
+import { money } from '@/intake/lib/format';
 
-// Menu — categories of dishes with thumbnail, description, price, diet/tag badges.
+// Menu — products grouped by category (grouped client-side in adapt.js). Backend
+// carries name + price only (no image/description/tags), so each dish is a
+// single line. Empty menu falls back to a "coming soon" placeholder so the
+// #menu nav anchor stays intact.
 export default function Menu({ menu }) {
-  const categories = menu?.categories ?? [];
-  if (!categories.length) return null;
+  const categories = (menu?.categories ?? []).filter((c) => c.items.length);
+
+  if (!categories.length) {
+    return (
+      <section id="menu" className="sf-section sf-section--muted">
+        <div className="container text-center">
+          <p className="sf-eyebrow">Our menu</p>
+          <h2 className="sf-section__title">Menu coming soon</h2>
+          <p className="sf-lead mx-auto">Our full menu will be available here shortly.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="menu" className="sf-section sf-section--muted">
@@ -13,32 +27,16 @@ export default function Menu({ menu }) {
         <h2 className="sf-section__title">A taste of the kitchen</h2>
 
         {categories.map((cat) => (
-          <div key={cat.name} className="sf-menu-cat">
+          <div key={cat.id} className="sf-menu-cat">
             <h3 className="sf-menu-cat__name">{cat.name}</h3>
             <div className="row g-3">
               {cat.items.map((item) => (
-                <div key={item.name} className="col-12 col-md-6">
+                <div key={item.id} className="col-12 col-md-6">
                   <article className="sf-dish">
-                    {item.image && (
-                      <img
-                        className="sf-dish__img"
-                        src={item.image}
-                        alt={item.name}
-                        loading="lazy"
-                      />
-                    )}
                     <div className="sf-dish__body">
                       <div className="sf-dish__head">
                         <h4 className="sf-dish__name">{item.name}</h4>
-                        <span className="sf-dish__price">{item.price}</span>
-                      </div>
-                      <p className="sf-dish__desc">{item.desc}</p>
-                      <div className="sf-dish__tags">
-                        {item.tags?.map((t) => (
-                          <Badge key={t} className="me-1 text-uppercase">
-                            {t}
-                          </Badge>
-                        ))}
+                        <span className="sf-dish__price">{money(item.price)}</span>
                       </div>
                     </div>
                   </article>

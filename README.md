@@ -161,6 +161,42 @@ optimizeDeps: {
 
 ---
 
+## Storefront `about.body` HTML
+
+The public storefront's About section renders `about.body` (from keeper
+`GET /apps/lookup`) as sanitized HTML (DOMPurify). It may contain block markup,
+so highlight chips are authored directly in the body rather than a separate
+field. Use the existing storefront classes to reproduce the chip row:
+
+```html
+<p>For over two decades, Saffron &amp; Sage has served slow-cooked curries,
+tandoor-charred breads, and seasonal plates built from produce sourced each
+morning.</p>
+
+<div class="row g-3 mt-2">
+  <div class="col-6 col-lg-3">
+    <div class="sf-highlight">
+      <div class="sf-highlight__label">Est. 2003</div>
+      <div class="sf-highlight__detail">20+ years serving the neighbourhood</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="sf-highlight">
+      <div class="sf-highlight__label">Farm to table</div>
+      <div class="sf-highlight__detail">Produce sourced fresh daily</div>
+    </div>
+  </div>
+  <!-- repeat .col blocks per highlight -->
+</div>
+```
+
+Sanitizer-permitted classes: `row`, `g-3`, `mt-2`, `col-6`, `col-lg-3`,
+`sf-highlight`, `sf-highlight__label`, `sf-highlight__detail`. Standard tags
+(`p`, `div`, `strong`, `em`, `ul`, `li`, `a`, `br`, `h3`, `h4`) are allowed by
+DOMPurify's default config — no custom allow-list needed unless tightened.
+
+---
+
 ## Renaming this scaffold
 
 1. Update `package.json` → `name`

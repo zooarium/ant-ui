@@ -17,7 +17,7 @@ const SOCIAL_ICON = {
 // Contact — address/phone/email, working hours table, social links.
 export default function Contact({ contact }) {
   if (!contact) return null;
-  const { address, phone, email, hours = [], social = [] } = contact;
+  const { address, phone, email, hours = '', social = [] } = contact;
 
   return (
     <section id="contact" className="sf-section">
@@ -59,16 +59,13 @@ export default function Contact({ contact }) {
               <div className="sf-hours__head">
                 <IconClock size={20} /> <span>Opening hours</span>
               </div>
-              <table className="sf-hours__table">
-                <tbody>
-                  {hours.map((h) => (
-                    <tr key={h.day}>
-                      <th scope="row">{h.day}</th>
-                      <td>{h.open} – {h.close}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              {/* hours is free-text from keeper PublicApp.contact.hours —
+                  rendered verbatim, line breaks preserved. */}
+              {hours ? (
+                <div style={{ whiteSpace: 'pre-line' }}>{hours}</div>
+              ) : (
+                <div className="text-secondary">Hours coming soon.</div>
+              )}
             </div>
           </div>
         </div>

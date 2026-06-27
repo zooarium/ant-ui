@@ -4,6 +4,7 @@ import {
   IconCategory,
   IconPackage,
   IconShoppingCart,
+  IconBuildingStore,
 } from '@aviary-ui/ui';
 
 // All admin routes live under /admin — root "/" is reserved for the public site.
@@ -16,6 +17,9 @@ export const ADMIN_PATHS = {
   orders: '/admin/orders',
   // Order groups (tabs) — reached via the Orders page "Group" tab, no sidebar item.
   orderGroups: '/admin/order-groups',
+  // Storefront — singleton per app, profile-like. Reached via the username
+  // dropdown (USER_MENU_ITEMS), not the sidebar.
+  storefront: '/admin/storefront',
   // Impersonation handoff landing (no sidebar item).
   impersonateExchange: '/admin/impersonate/exchange',
 };
@@ -28,4 +32,10 @@ export const NAV_ITEMS = [
   { path: ADMIN_PATHS.categories, label: 'Categories', Icon: IconCategory },
   { path: ADMIN_PATHS.products, label: 'Products', Icon: IconPackage },
   { path: ADMIN_PATHS.orders, label: 'Orders', Icon: IconShoppingCart },
+];
+
+// Items in the bottom-left username dropdown (AppLayout userMenuItems).
+// Profile-like, account-scoped destinations that don't warrant a sidebar slot.
+export const USER_MENU_ITEMS = [
+  { path: ADMIN_PATHS.storefront, label: 'Storefront', Icon: IconBuildingStore },
 ];

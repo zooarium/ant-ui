@@ -15,6 +15,7 @@ const ProductDetailPage = lazy(() => import('@/pages/ProductDetailPage'));
 const OrdersPage = lazy(() => import('@/pages/OrdersPage'));
 const OrderDetailPage = lazy(() => import('@/pages/OrderDetailPage'));
 const OrderGroupDetailPage = lazy(() => import('@/pages/OrderGroupDetailPage'));
+const StorefrontPage = lazy(() => import('@/pages/StorefrontPage'));
 
 // Wrap a page in PrivateRoute with the admin login path.
 function Private({ children }) {
@@ -62,6 +63,7 @@ export default function AdminRouter() {
           <Route path={ADMIN_PATHS.orders} element={<Private><OrdersPage /></Private>} />
           <Route path={`${ADMIN_PATHS.orders}/:id`} element={<Private><OrderDetailPage /></Private>} />
           <Route path={`${ADMIN_PATHS.orderGroups}/:id`} element={<Private><OrderGroupDetailPage /></Private>} />
+          <Route path={ADMIN_PATHS.storefront} element={<Private><StorefrontPage /></Private>} />
         </Routes>
       </Suspense>
     </BrowserRouter>

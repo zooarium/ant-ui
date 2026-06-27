@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Button, Spinner, Alert, useNotification, IconArrowLeft, IconAlertTriangle } from '@aviary-ui/ui';
-import { STOREFRONT } from '@/public/storefront/data';
+import { usePublicStorefront } from '@/public/storefront/usePublicStorefront';
 import '../intake.css';
 import { useMenu } from '../hooks/useMenu';
 import { useCart } from '../hooks/useCart';
@@ -28,6 +28,7 @@ export default function IntakePage() {
   const view = params.get('view');
 
   const { showNotification } = useNotification();
+  const { sf } = usePublicStorefront();
   const { products, isLoading, error: menuError } = useMenu();
   const cart = useCart();
   const { place, isSubmitting } = usePlaceOrder();
@@ -47,8 +48,8 @@ export default function IntakePage() {
 
   // Browser tab title = tenant name (replaces the static "App" from index.html).
   useEffect(() => {
-    if (STOREFRONT.name) document.title = STOREFRONT.name;
-  }, []);
+    if (sf?.name) document.title = sf.name;
+  }, [sf?.name]);
 
   // List payload omits attributes (ant loads them only on GetByID), so fetch the
   // full product before opening the picker — otherwise mandatory options can't be
@@ -263,8 +264,10 @@ function hexToRgb(hex) {
 // the primary colour drives tabler's --tblr-primary (buttons/links) and the
 // storefront font/brand bar carry over.
 function Shell({ children, onHistory, onHome, title = 'Place your order' }) {
-  const brand = STOREFRONT.name;
-  const primary = STOREFRONT.branding?.primaryColor || '#b8482e';
+  const { sf } = usePublicStorefront();
+  const brand = sf?.name || 'Your store';
+  // No backend field for brand colour — constant fallback.
+  const primary = sf?.branding?.primaryColor || '#b8482e';
   const themeVars = {
     '--sf-primary': primary,
     '--tblr-primary': primary,
